@@ -18,7 +18,19 @@ describe('useAppContext', () => {
 
   test('login sets user and saves to localStorage', () => {
     const { result } = renderHook(() => useAppContext(), { wrapper });
-    const mockUser = createMockUser();
+    const mockUser = {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      collegeId: 'college-1',
+      studentId: 'STU001',
+      memberSince: '2024',
+      preferences: {
+        notifications: true,
+        theme: 'light' as const,
+        language: 'en'
+      }
+    };
 
     act(() => {
       result.current.dispatch({ type: 'SET_USER', payload: mockUser });
@@ -29,7 +41,19 @@ describe('useAppContext', () => {
 
   test('logout clears user data', () => {
     const { result } = renderHook(() => useAppContext(), { wrapper });
-    const mockUser = createMockUser();
+    const mockUser = {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      collegeId: 'college-1',
+      studentId: 'STU001',
+      memberSince: '2024',
+      preferences: {
+        notifications: true,
+        theme: 'light' as const,
+        language: 'en'
+      }
+    };
 
     // Login first
     act(() => {
