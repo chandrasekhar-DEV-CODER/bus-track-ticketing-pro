@@ -3,17 +3,62 @@ import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { EnhancedThemeProvider } from '../contexts/EnhancedThemeContext';
 import { AppProvider } from '../contexts/AppContext';
+import { EnhancedThemeProvider } from '../contexts/EnhancedThemeContext';
 
-// Custom render function that includes all providers
-const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
+// Mock user data for testing
+export const createMockUser = (overrides = {}) => ({
+  id: '1',
+  name: 'Test User',
+  email: 'test@example.com',
+  collegeId: 'college-1',
+  studentId: 'STU001',
+  memberSince: '2024',
+  preferences: {
+    notifications: true,
+    theme: 'light' as const,
+    language: 'en'
+  },
+  ...overrides
+});
+
+// Mock college data for testing
+export const createMockCollege = (overrides = {}) => ({
+  id: 'college-1',
+  name: 'Test University',
+  logo: '',
+  primaryColor: '#FF0000',
+  secondaryColor: '#FFFFFF',
+  routes: ['route-1', 'route-2'],
+  ...overrides
+});
+
+// Mock booking data for testing
+export const createMockBooking = (overrides = {}) => ({
+  id: '1',
+  routeId: 'route-1',
+  userId: 'user-1',
+  date: '2024-01-01',
+  time: '09:00',
+  seats: 2,
+  status: 'confirmed' as const,
+  qrCode: 'QR123',
+  fare: 10.50,
+  ...overrides
+});
+
+// Create a new QueryClient for each test
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
     },
-  });
+  },
+});
+
+// All the providers wrapper
+const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = createTestQueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -28,42 +73,11 @@ const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) 
   );
 };
 
+// Custom render function that includes providers
 const customRender = (
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
 ) => render(ui, { wrapper: AllTheProviders, ...options });
-
-// Mock data generators
-export const createMockUser = (overrides = {}) => ({
-  id: 'user-123',
-  name: 'Test User',
-  email: 'test@example.com',
-  collegeId: 'tech-uni',
-  studentId: 'TU2024001',
-  memberSince: '2024',
-  ...overrides
-});
-
-export const createMockCollege = (overrides = {}) => ({
-  id: 'tech-uni',
-  name: 'Tech University',
-  supportEmail: 'transport@techuni.edu',
-  supportPhone: '+1 (555) 123-TECH',
-  primaryColor: '#EF4444',
-  secondaryColor: '#F87171',
-  specialAlerts: [],
-  ...overrides
-});
-
-export const createMockRoute = (overrides = {}) => ({
-  id: '42A',
-  name: 'Central Station → Airport',
-  seatsLeft: 12,
-  fare: 4.50,
-  demand: 65,
-  eta: 15,
-  ...overrides
-});
 
 // Re-export everything
 export * from '@testing-library/react';
