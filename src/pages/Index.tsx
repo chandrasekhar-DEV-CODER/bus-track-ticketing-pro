@@ -1,12 +1,28 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import LandingPage from '../components/LandingPage';
+import LoginPage from '../components/LoginPage';
+import BookingPage from '../components/BookingPage';
+import TrackingPage from '../components/TrackingPage';
+import TicketsPage from '../components/TicketsPage';
+import DriverPanel from '../components/DriverPanel';
+import AdminDashboard from '../components/AdminDashboard';
+import Navbar from '../components/Navbar';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/book" element={<BookingPage />} />
+        <Route path="/track" element={<TrackingPage />} />
+        <Route path="/tickets" element={<TicketsPage />} />
+        <Route path="/driver" element={<DriverPanel />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
     </div>
   );
 };
