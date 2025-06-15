@@ -5,33 +5,41 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bell, Moon, Sun, Palette, Globe } from 'lucide-react';
-import { useEnhancedTheme } from '@/contexts/EnhancedThemeContext';
+import { Badge } from '@/components/ui/badge';
+import { Bell, Moon, Sun, Monitor, Globe, Smartphone, Mail, MessageSquare, Shield, Palette } from 'lucide-react';
+import { useAppContext } from '@/contexts/AppContext';
 
 const SettingsPanel: React.FC = () => {
-  const { theme, accentColor, toggleTheme, setAccentColor } = useEnhancedTheme();
-  const [notifications, setNotifications] = useState({
-    bookingReminders: true,
-    routeUpdates: true,
-    promotions: false,
-    maintenance: true
+  const { state, dispatch } = useAppContext();
+  const [localSettings, setLocalSettings] = useState({
+    notifications: state.user?.preferences?.notifications || true,
+    emailNotifications: true,
+    smsNotifications: false,
+    pushNotifications: true,
+    theme: state.theme || 'system',
+    language: state.user?.preferences?.language || 'en',
+    autoBooking: false,
+    locationTracking: true,
+    dataSync: true
   });
 
-  const accentColors = [
-    { name: 'Red', value: 'red' as const, color: '#EF4444' },
-    { name: 'Blue', value: 'blue' as const, color: '#3B82F6' },
-    { name: 'Green', value: 'green' as const, color: '#10B981' },
-    { name: 'Purple', value: 'purple' as const, color: '#8B5CF6' },
-    { name: 'Orange', value: 'orange' as const, color: '#F59E0B' },
-    { name: 'Pink', value: 'pink' as const, color: '#EC4899' }
-  ];
-
-  const handleNotificationChange = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  const handleSettingChange = (key: string, value: any) => {
+    setLocalSettings(prev => ({ ...prev, [key]: value }));
+    
+    // Update global state for certain settings
+    if (key === 'theme') {
+      dispatch({ type: 'SET_THEME', payload: value });
+    }
   };
+
+  const accentColors = [
+    { name: 'Blue', value: 'blue', color: 'bg-blue-500' },
+    { name: 'Red', value: 'red', color: 'bg-red-500' },
+    { name: 'Green', value: 'green', color: 'bg-green-500' },
+    { name: 'Purple', value: 'purple', color: 'bg-purple-500' },
+    { name: 'Orange', value: 'orange', color: 'bg-orange-500' },
+    { name: 'Pink', value: 'pink', color: 'bg-pink-500' }
+  ];
 
   return (
     <motion.div
@@ -39,56 +47,56 @@ const SettingsPanel: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      {/* Theme Settings */}
+      {/* Appearance */}
       <Card className="glass border-white/20 dark:border-gray-700/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Palette className="h-5 w-5" />
+            <Palette className="h-5 w-5 text-blue-500" />
             <span>Appearance</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Theme Toggle */}
+        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {theme === 'dark' ? (
-                <Moon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              ) : (
-                <Sun className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              )}
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  Dark Mode
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Switch between light and dark themes
-                </p>
-              </div>
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">Theme</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Choose your preferred color scheme</p>
             </div>
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={toggleTheme}
-            />
+            <Select value={localSettings.theme} onValueChange={(value) => handleSettingChange('theme', value)}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">
+                  <div className="flex items-center space-x-2">
+                    <Sun className="h-4 w-4" />
+                    <span>Light</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="dark">
+                  <div className="flex items-center space-x-2">
+                    <Moon className="h-4 w-4" />
+                    <span>Dark</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="system">
+                  <div className="flex items-center space-x-2">
+                    <Monitor className="h-4 w-4" />
+                    <span>System</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Accent Color Picker */}
           <div>
-            <p className="font-medium text-gray-900 dark:text-white mb-3">
-              Accent Color
-            </p>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            <p className="font-medium text-gray-900 dark:text-white mb-3">Accent Color</p>
+            <div className="flex flex-wrap gap-2">
               {accentColors.map((color) => (
                 <button
                   key={color.value}
-                  onClick={() => setAccentColor(color.value)}
-                  className={`w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${
-                    accentColor === color.value
-                      ? 'ring-4 ring-offset-2 ring-offset-white dark:ring-offset-gray-800'
-                      : 'hover:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-gray-800'
-                  }`}
-                  style={{ 
-                    backgroundColor: color.color,
-                    ringColor: color.color
+                  className={`w-8 h-8 rounded-full ${color.color} border-2 border-white dark:border-gray-700 shadow-sm hover:scale-110 transition-transform`}
+                  style={{
+                    boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
                   }}
                   title={color.name}
                 />
@@ -98,113 +106,104 @@ const SettingsPanel: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Notification Settings */}
+      {/* Notifications */}
       <Card className="glass border-white/20 dark:border-gray-700/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Bell className="h-5 w-5" />
+            <Bell className="h-5 w-5 text-green-500" />
             <span>Notifications</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">
-                Booking Reminders
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Get notified about upcoming trips
-              </p>
+          {[
+            { key: 'notifications', label: 'Push Notifications', desc: 'Receive notifications about your bookings', icon: Smartphone },
+            { key: 'emailNotifications', label: 'Email Notifications', desc: 'Get updates via email', icon: Mail },
+            { key: 'smsNotifications', label: 'SMS Notifications', desc: 'Receive text messages for important updates', icon: MessageSquare }
+          ].map((item) => (
+            <div key={item.key} className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <item.icon className="h-4 w-4 text-gray-500" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">{item.label}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                </div>
+              </div>
+              <Switch
+                checked={localSettings[item.key as keyof typeof localSettings] as boolean}
+                onCheckedChange={(checked) => handleSettingChange(item.key, checked)}
+              />
             </div>
-            <Switch
-              checked={notifications.bookingReminders}
-              onCheckedChange={() => handleNotificationChange('bookingReminders')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">
-                Route Updates
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Real-time updates about route changes
-              </p>
-            </div>
-            <Switch
-              checked={notifications.routeUpdates}
-              onCheckedChange={() => handleNotificationChange('routeUpdates')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">
-                Promotions
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Special offers and discounts
-              </p>
-            </div>
-            <Switch
-              checked={notifications.promotions}
-              onCheckedChange={() => handleNotificationChange('promotions')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900 dark:text-white">
-                Maintenance Alerts
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Service disruptions and maintenance
-              </p>
-            </div>
-            <Switch
-              checked={notifications.maintenance}
-              onCheckedChange={() => handleNotificationChange('maintenance')}
-            />
-          </div>
+          ))}
         </CardContent>
       </Card>
 
-      {/* Account Settings */}
+      {/* Privacy & Security */}
       <Card className="glass border-white/20 dark:border-gray-700/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Globe className="h-5 w-5" />
-            <span>Account</span>
+            <Shield className="h-5 w-5 text-purple-500" />
+            <span>Privacy & Security</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Language
-            </label>
-            <Select defaultValue="en">
-              <SelectTrigger>
-                <SelectValue placeholder="Select language" />
+          {[
+            { key: 'locationTracking', label: 'Location Tracking', desc: 'Allow app to access your location for better routes' },
+            { key: 'dataSync', label: 'Data Synchronization', desc: 'Sync your data across devices' },
+            { key: 'autoBooking', label: 'Auto-booking', desc: 'Automatically book recurring routes' }
+          ].map((item) => (
+            <div key={item.key} className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white">{item.label}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+              </div>
+              <Switch
+                checked={localSettings[item.key as keyof typeof localSettings] as boolean}
+                onCheckedChange={(checked) => handleSettingChange(item.key, checked)}
+              />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Language & Region */}
+      <Card className="glass border-white/20 dark:border-gray-700/50">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Globe className="h-5 w-5 text-orange-500" />
+            <span>Language & Region</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">Language</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Choose your preferred language</p>
+            </div>
+            <Select value={localSettings.language} onValueChange={(value) => handleSettingChange('language', value)}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-                <SelectItem value="de">Deutsch</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="hi">Hindi</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
-          <div className="flex space-x-3 pt-4">
-            <Button variant="outline" className="flex-1">
-              Change Password
-            </Button>
-            <Button variant="outline" className="flex-1 text-red-600 hover:text-red-700">
-              Delete Account
-            </Button>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Actions */}
+      <div className="flex space-x-4">
+        <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
+          Save Changes
+        </Button>
+        <Button variant="outline" className="flex-1">
+          Reset to Default
+        </Button>
+      </div>
     </motion.div>
   );
 };
