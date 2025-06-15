@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Ticket, 
@@ -77,10 +76,10 @@ const TicketsPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'upcoming': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'upcoming': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'completed': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'cancelled': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
     }
   };
 
@@ -101,56 +100,56 @@ const TicketsPage = () => {
   });
 
   const QRCodeModal = ({ ticket, onClose }: { ticket: any, onClose: () => void }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="glass-card rounded-2xl p-8 max-w-md w-full">
         <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Your Ticket</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Ticket</h3>
           
           {/* QR Code */}
-          <div className="bg-white p-6 rounded-xl border-2 border-gray-200 mb-6">
-            <div className="w-48 h-48 bg-gray-100 rounded-lg mx-auto flex items-center justify-center mb-4">
+          <div className="glass rounded-xl p-6 mb-6">
+            <div className="w-48 h-48 bg-gray-100 dark:bg-gray-800 rounded-lg mx-auto flex items-center justify-center mb-4">
               <div className="grid grid-cols-8 gap-1">
                 {Array.from({ length: 64 }).map((_, i) => (
                   <div 
                     key={i} 
-                    className={`w-2 h-2 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`}
+                    className={`w-2 h-2 ${Math.random() > 0.5 ? 'bg-black dark:bg-white' : 'bg-white dark:bg-black'}`}
                   />
                 ))}
               </div>
             </div>
-            <p className="text-sm text-gray-600">Scan this QR code during boarding</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Scan this QR code during boarding</p>
           </div>
           
           {/* Ticket Details */}
-          <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+          <div className="glass rounded-xl p-4 mb-6 text-left">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-600">Ticket ID</p>
-                <p className="font-semibold">{ticket.id}</p>
+                <p className="text-gray-600 dark:text-gray-400">Ticket ID</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.id}</p>
               </div>
               <div>
-                <p className="text-gray-600">Bus</p>
-                <p className="font-semibold">{ticket.busNumber}</p>
+                <p className="text-gray-600 dark:text-gray-400">Bus</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.busNumber}</p>
               </div>
               <div>
-                <p className="text-gray-600">Date</p>
-                <p className="font-semibold">{ticket.date}</p>
+                <p className="text-gray-600 dark:text-gray-400">Date</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.date}</p>
               </div>
               <div>
-                <p className="text-gray-600">Time</p>
-                <p className="font-semibold">{ticket.time}</p>
+                <p className="text-gray-600 dark:text-gray-400">Time</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.time}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-gray-600">Route</p>
-                <p className="font-semibold">{ticket.route}</p>
+                <p className="text-gray-600 dark:text-gray-400">Route</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.route}</p>
               </div>
               <div>
-                <p className="text-gray-600">Seats</p>
-                <p className="font-semibold">{ticket.seats.join(', ')}</p>
+                <p className="text-gray-600 dark:text-gray-400">Seats</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{ticket.seats.join(', ')}</p>
               </div>
               <div>
-                <p className="text-gray-600">Fare</p>
-                <p className="font-semibold">${ticket.fare}</p>
+                <p className="text-gray-600 dark:text-gray-400">Fare</p>
+                <p className="font-semibold text-gray-900 dark:text-white">${ticket.fare}</p>
               </div>
             </div>
           </div>
@@ -158,11 +157,14 @@ const TicketsPage = () => {
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 bg-gray-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-gray-700 transition-colors"
+              className="flex-1 glass text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-ring"
             >
               Close
             </button>
-            <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+            <button 
+              className="flex-1 text-white py-3 px-4 rounded-xl font-semibold transition-colors focus-ring flex items-center justify-center"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+            >
               <Download className="h-4 w-4 mr-2" />
               Download
             </button>
@@ -173,20 +175,20 @@ const TicketsPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 heading-gradient">
             My Tickets
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 dark:text-gray-400">
             Manage and view all your bus tickets
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
+        <div className="glass-card rounded-2xl p-6 shadow-lg mb-8">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -196,12 +198,12 @@ const TicketsPage = () => {
                 placeholder="Search tickets..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full px-4 py-3 glass rounded-xl focus-ring border-0 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
 
             {/* Status Tabs */}
-            <div className="flex bg-gray-100 rounded-xl p-1">
+            <div className="glass rounded-xl p-1">
               {[
                 { id: 'all', label: 'All' },
                 { id: 'upcoming', label: 'Upcoming' },
@@ -211,11 +213,14 @@ const TicketsPage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 focus-ring ${
                     activeTab === tab.id
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-800'
+                      ? 'text-white shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
                   }`}
+                  style={{
+                    backgroundColor: activeTab === tab.id ? 'var(--accent-primary)' : 'transparent'
+                  }}
                 >
                   {tab.label}
                 </button>
@@ -227,34 +232,37 @@ const TicketsPage = () => {
         {/* Tickets List */}
         <div className="space-y-6">
           {filteredTickets.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 shadow-lg text-center">
+            <div className="glass-card rounded-2xl p-12 shadow-lg text-center">
               <Ticket className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No tickets found</h3>
-              <p className="text-gray-600 mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No tickets found</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {searchTerm ? 'Try adjusting your search terms' : 'You haven\'t booked any tickets yet'}
               </p>
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+              <button 
+                className="text-white px-6 py-3 rounded-xl font-semibold transition-colors focus-ring"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+              >
                 Book Your First Ticket
               </button>
             </div>
           ) : (
             filteredTickets.map(ticket => (
-              <div key={ticket.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div key={ticket.id} className="glass-card rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{ticket.id}</h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(ticket.status)}`}>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{ticket.id}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border ${getStatusColor(ticket.status)}`}>
                           {getStatusIcon(ticket.status)}
                           {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
                         </span>
                       </div>
-                      <div className="flex items-center text-gray-600 mb-2">
+                      <div className="flex items-center text-gray-600 dark:text-gray-400 mb-2">
                         <MapPin className="h-4 w-4 mr-2" />
                         <span className="font-medium">{ticket.route}</span>
                       </div>
-                      <div className="flex items-center gap-6 text-sm text-gray-600">
+                      <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
                           {ticket.date}
@@ -270,15 +278,15 @@ const TicketsPage = () => {
                     </div>
                     
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-blue-600">${ticket.fare}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-2xl font-bold" style={{ color: 'var(--accent-primary)' }}>${ticket.fare}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         {ticket.passengers} passenger{ticket.passengers > 1 ? 's' : ''}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center justify-between pt-4 border-t border-white/20 dark:border-gray-800/50">
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <div>
                         Seats: <span className="font-medium">{ticket.seats.join(', ')}</span>
                       </div>
@@ -286,7 +294,7 @@ const TicketsPage = () => {
                         Booked: {ticket.bookingDate}
                       </div>
                       {ticket.status === 'cancelled' && ticket.refundAmount && (
-                        <div className="text-green-600">
+                        <div className="text-green-400">
                           Refunded: ${ticket.refundAmount}
                         </div>
                       )}
@@ -297,20 +305,21 @@ const TicketsPage = () => {
                         <>
                           <button
                             onClick={() => setSelectedTicket(ticket.id)}
-                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                            className="flex items-center gap-2 text-white px-4 py-2 rounded-lg font-medium transition-colors focus-ring"
+                            style={{ backgroundColor: 'var(--accent-primary)' }}
                           >
                             <QrCode className="h-4 w-4" />
                             View QR
                           </button>
                           {ticket.cancellable && (
-                            <button className="border border-red-300 text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-50 transition-colors">
+                            <button className="glass border border-red-500/30 text-red-400 px-4 py-2 rounded-lg font-medium hover:bg-red-500/10 transition-colors focus-ring">
                               Cancel
                             </button>
                           )}
                         </>
                       )}
                       
-                      <button className="flex items-center gap-2 border border-gray-300 text-gray-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                      <button className="flex items-center gap-2 glass text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-ring">
                         <Download className="h-4 w-4" />
                         Download
                       </button>
@@ -332,32 +341,32 @@ const TicketsPage = () => {
 
         {/* Summary Stats */}
         {filteredTickets.length > 0 && (
-          <div className="mt-8 bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
+          <div className="mt-8 glass-card rounded-2xl p-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Summary</h3>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-xl">
-                <div className="text-2xl font-bold text-blue-600">
+              <div className="text-center p-4 glass rounded-xl">
+                <div className="text-2xl font-bold text-blue-400">
                   {tickets.filter(t => t.status === 'upcoming').length}
                 </div>
-                <div className="text-sm text-gray-600">Upcoming</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Upcoming</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-xl">
-                <div className="text-2xl font-bold text-green-600">
+              <div className="text-center p-4 glass rounded-xl">
+                <div className="text-2xl font-bold text-green-400">
                   {tickets.filter(t => t.status === 'completed').length}
                 </div>
-                <div className="text-sm text-gray-600">Completed</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Completed</div>
               </div>
-              <div className="text-center p-4 bg-red-50 rounded-xl">
-                <div className="text-2xl font-bold text-red-600">
+              <div className="text-center p-4 glass rounded-xl">
+                <div className="text-2xl font-bold text-red-400">
                   {tickets.filter(t => t.status === 'cancelled').length}
                 </div>
-                <div className="text-sm text-gray-600">Cancelled</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Cancelled</div>
               </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-xl">
-                <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-center p-4 glass rounded-xl">
+                <div className="text-2xl font-bold" style={{ color: 'var(--accent-primary)' }}>
                   ${tickets.reduce((sum, t) => t.status !== 'cancelled' ? sum + t.fare : sum, 0)}
                 </div>
-                <div className="text-sm text-gray-600">Total Spent</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Spent</div>
               </div>
             </div>
           </div>

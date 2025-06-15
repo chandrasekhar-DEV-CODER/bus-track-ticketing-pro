@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Moon, Sun } from 'lucide-react';
@@ -5,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useEnhancedTheme } from '../contexts/EnhancedThemeContext';
 import AccentColorPicker from './ui/AccentColorPicker';
 import MicroButton from './ui/MicroButton';
+import SmartBusLogo from './ui/SmartBusLogo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +22,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white dark:bg-slate-900 shadow-lg sticky top-0 z-40 transition-colors duration-300">
+    <nav className="glass-nav sticky top-0 z-40 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2 hover-target">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-lg">SB</span>
-                </div>
-              </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">SmartBus</span>
+            <Link to="/" className="hover-target focus-ring rounded-xl">
+              <SmartBusLogo size="sm" />
             </Link>
           </div>
 
@@ -40,14 +37,22 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover-target relative group ${
+                className={`px-4 py-2 text-sm font-medium transition-all duration-300 hover-target relative group rounded-lg focus-ring ${
                   location.pathname === link.path
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
+                    ? 'text-white shadow-lg'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-white dark:hover:text-white'
                 }`}
+                style={{
+                  backgroundColor: location.pathname === link.path ? 'var(--accent-primary)' : 'transparent',
+                }}
               >
                 {link.name}
-                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 dark:bg-blue-400 transform scale-x-0 transition-transform group-hover:scale-x-100"></span>
+                {location.pathname !== link.path && (
+                  <span 
+                    className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                    style={{ backgroundColor: 'var(--accent-primary)' }}
+                  />
+                )}
               </Link>
             ))}
           </div>
@@ -59,12 +64,12 @@ const Navbar = () => {
               onClick={toggleTheme}
               variant="outline"
               size="sm"
-              className="p-2"
+              className="p-2 glass border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
             >
               {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-5 w-5 text-yellow-500" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-5 w-5 text-blue-600" />
               )}
             </MicroButton>
           </div>
@@ -76,17 +81,17 @@ const Navbar = () => {
               onClick={toggleTheme}
               variant="outline"
               size="sm"
-              className="p-2"
+              className="p-2 glass"
             >
               {theme === 'dark' ? (
-                <Sun className="h-4 w-4" />
+                <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
-                <Moon className="h-4 w-4" />
+                <Moon className="h-4 w-4 text-blue-600" />
               )}
             </MicroButton>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none hover-target"
+              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus-ring rounded-lg p-2 hover-target glass"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -99,18 +104,21 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-gray-200 dark:border-gray-700"
+            className="md:hidden border-t border-white/20 dark:border-gray-800/50 mt-2 pt-2"
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 hover-target ${
+                  className={`block px-4 py-3 text-base font-medium transition-all duration-300 hover-target rounded-xl focus-ring ${
                     location.pathname === link.path
-                      ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'text-white shadow-lg'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-white'
                   }`}
+                  style={{
+                    backgroundColor: location.pathname === link.path ? 'var(--accent-primary)' : 'transparent',
+                  }}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}

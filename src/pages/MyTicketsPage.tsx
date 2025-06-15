@@ -5,11 +5,11 @@ import TicketsPage from '../components/TicketsPage';
 
 const MyTicketsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="dark:bg-slate-900 min-h-screen">
+      <main className="flex-1">
         <TicketsPage />
-      </div>
+      </main>
       <Footer />
     </div>
   );
