@@ -1,16 +1,11 @@
 
 import { useState, useCallback } from 'react';
+import { api } from '../lib/api';
 
 interface ApiResponse<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
-}
-
-interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  headers?: Record<string, string>;
-  body?: any;
 }
 
 export const useApi = <T>() => {
@@ -20,28 +15,15 @@ export const useApi = <T>() => {
     error: null
   });
 
-  const callApi = useCallback(async (url: string, options: ApiOptions = {}) => {
+  const callApi = useCallback(async (apiCall: () => Promise<any>) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
-      const response = await fetch(url, {
-        method: options.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setState({ data, loading: false, error: null });
-      return data;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      const response = await apiCall();
+      setState({ data: response.data, loading: false, error: null });
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.message || 'An error occurred';
       setState({ data: null, loading: false, error: errorMessage });
       throw error;
     }
@@ -55,30 +37,8 @@ export const useBusRoutes = () => {
   const { data, loading, error, callApi } = useApi<any[]>();
 
   const fetchRoutes = useCallback(async (filters?: any) => {
-    // Mock API call - replace with real endpoint
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const mockRoutes = [
-      {
-        id: '42A',
-        name: 'Central Station → Airport',
-        seatsLeft: 12,
-        fare: 4.50,
-        demand: 65,
-        eta: 15
-      },
-      {
-        id: '15B', 
-        name: 'Downtown → University',
-        seatsLeft: 8,
-        fare: 3.25,
-        demand: 85,
-        eta: 8
-      }
-    ];
-
-    return mockRoutes;
-  }, []);
+    return callApi(() => api.routes.search(filters || {}));
+  }, [callApi]);
 
   return { routes: data, loading, error, fetchRoutes };
 };
@@ -87,21 +47,30 @@ export const useBookingApi = () => {
   const { callApi } = useApi();
 
   const createBooking = useCallback(async (bookingData: any) => {
-    // Mock booking creation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    return {
-      id: `booking-${Date.now()}`,
-      ...bookingData,
-      status: 'confirmed',
-      qrCode: `QR-${Math.random().toString(36).substr(2, 9)}`
-    };
+    return callApi(() => api.bookings.create(bookingData));
   }, [callApi]);
 
-  const cancelBooking = useCallback(async (bookingId: string) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return { success: true };
+  const cancelBooking = useCallback(async (bookingId: string, reason?: string) => {
+    return callApi(() => api.bookings.cancel(bookingId, reason));
   }, [callApi]);
 
   return { createBooking, cancelBooking };
+};
+
+export const useAuthApi = () => {
+  const { callApi } = useApi();
+
+  const login = useCallback(async (credentials: { email: string; password: string }) => {
+    return callApi(() => api.auth.login(credentials));
+  }, [callApi]);
+
+  const register = useCallback(async (userData: any) => {
+    return callApi(() => api.auth.register(userData));
+  }, [callApi]);
+
+  const getCurrentUser = useCallback(async () => {
+    return callApi(() => api.auth.me());
+  }, [callApi]);
+
+  return { login, register, getCurrentUser };
 };

@@ -4,9 +4,9 @@ import { toast } from 'sonner';
 
 // API Response Types
 export interface ApiResponse<T = any> {
+  success: boolean;
   data: T;
   message?: string;
-  success: boolean;
 }
 
 export interface ApiError {
@@ -18,7 +18,7 @@ export interface ApiError {
 // Create axios instance
 const createApiClient = (): AxiosInstance => {
   const client = axios.create({
-    baseURL: process.env.VITE_API_BASE_URL || '/api',
+    baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
     timeout: 10000,
     headers: {
       'Content-Type': 'application/json',
@@ -28,6 +28,8 @@ const createApiClient = (): AxiosInstance => {
   // Request interceptor
   client.interceptors.request.use(
     (config) => {
+      console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+      
       // Add auth token if available
       const token = localStorage.getItem('smartbus-token');
       if (token) {
@@ -39,7 +41,9 @@ const createApiClient = (): AxiosInstance => {
       if (user) {
         try {
           const userData = JSON.parse(user);
-          config.headers['X-College-ID'] = userData.collegeId;
+          if (userData.collegeId) {
+            config.headers['X-College-ID'] = userData.collegeId;
+          }
         } catch (error) {
           console.warn('Failed to parse user data for college context');
         }
@@ -52,8 +56,13 @@ const createApiClient = (): AxiosInstance => {
 
   // Response interceptor
   client.interceptors.response.use(
-    (response: AxiosResponse) => response,
+    (response: AxiosResponse) => {
+      console.log(`API Response: ${response.status} ${response.config.url}`);
+      return response;
+    },
     (error: AxiosError) => {
+      console.error('API Error:', error);
+      
       const apiError: ApiError = {
         message: 'An unexpected error occurred',
         status: error.response?.status || 500,
@@ -73,13 +82,19 @@ const createApiClient = (): AxiosInstance => {
           // Unauthorized - redirect to login
           localStorage.removeItem('smartbus-token');
           localStorage.removeItem('smartbus-user');
-          window.location.href = '/login';
+          localStorage.removeItem('smartbus-college');
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
           break;
         case 403:
           toast.error('Access denied. Please contact your administrator.');
           break;
         case 404:
           toast.error('The requested resource was not found.');
+          break;
+        case 429:
+          toast.error('Too many requests. Please try again later.');
           break;
         case 500:
           toast.error('Server error. Please try again later.');
@@ -116,51 +131,118 @@ export const api = {
 
   // Auth endpoints
   auth: {
-    login: (credentials: { email: string; password: string; collegeId: string }) =>
+    login: (credentials: { email: string; password: string }) =>
       api.post<{ user: any; token: string; college: any }>('/auth/login', credentials),
     
-    register: (userData: { name: string; email: string; password: string; collegeId: string; studentId: string }) =>
-      api.post<{ user: any; token: string }>('/auth/register', userData),
+    register: (userData: { 
+      name: string; 
+      email: string; 
+      password: string; 
+      collegeId: string; 
+      studentId?: string;
+      role?: 'student' | 'organization';
+      phone?: string;
+    }) =>
+      api.post<{ user: any; token: string; college: any }>('/auth/register', userData),
     
     logout: () => api.post('/auth/logout'),
     
     refresh: () => api.post<{ token: string }>('/auth/refresh'),
+
+    me: () => api.get<{ user: any; college: any }>('/auth/me'),
   },
 
-  // Bus routes
+  // Bus routes endpoints
   routes: {
-    search: (params: { from?: string; to?: string; date?: string; collegeId?: string }) =>
+    search: (params: { 
+      collegeId?: string; 
+      from?: string; 
+      to?: string; 
+      date?: string;
+      status?: string;
+    }) =>
       api.get<any[]>('/routes/search', params),
     
     getById: (id: string) => api.get<any>(`/routes/${id}`),
     
     getLive: (routeId: string) => api.get<any>(`/routes/${routeId}/live`),
+
+    getAvailability: (routeId: string, date: string) =>
+      api.get<{ availableSeats: number; totalSeats: number }>(`/routes/${routeId}/availability`, { date }),
+
+    create: (routeData: any) => api.post<any>('/routes', routeData),
+
+    update: (id: string, routeData: any) => api.put<any>(`/routes/${id}`, routeData),
+
+    updateLive: (id: string, liveData: any) => api.post<any>(`/routes/${id}/live`, liveData),
   },
 
-  // Bookings
+  // Bookings/Tickets endpoints
   bookings: {
-    create: (bookingData: any) => api.post<any>('/bookings', bookingData),
+    create: (bookingData: {
+      routeId: string;
+      travelDate: string;
+      departureTime: string;
+      pickupStop: string;
+      dropoffStop: string;
+      seats: number;
+    }) => api.post<any>('/bookings', bookingData),
     
-    getUser: (userId: string) => api.get<any[]>(`/bookings/user/${userId}`),
+    getUser: (userId?: string) => 
+      api.get<any[]>(userId ? `/bookings/user/${userId}` : '/bookings/user'),
     
-    cancel: (bookingId: string) => api.delete(`/bookings/${bookingId}`),
+    cancel: (bookingId: string, reason?: string) => 
+      api.delete(`/bookings/${bookingId}`, { data: { reason } }),
     
     getById: (bookingId: string) => api.get<any>(`/bookings/${bookingId}`),
+
+    getAll: (params?: { status?: string; date?: string; collegeId?: string }) =>
+      api.get<any[]>('/bookings', params),
   },
 
-  // College data
+  // College data endpoints
   colleges: {
     getById: (collegeId: string) => api.get<any>(`/colleges/${collegeId}`),
     
     getRoutes: (collegeId: string) => api.get<any[]>(`/colleges/${collegeId}/routes`),
+
+    getAll: () => api.get<any[]>('/colleges'),
+
+    create: (collegeData: any) => api.post<any>('/colleges', collegeData),
+
+    update: (id: string, collegeData: any) => api.put<any>(`/colleges/${id}`, collegeData),
   },
 
-  // User profile
+  // User profile endpoints
   profile: {
-    get: () => api.get<any>('/profile'),
+    get: () => api.get<any>('/users/profile'),
     
-    update: (profileData: any) => api.put<any>('/profile', profileData),
+    update: (profileData: any) => api.put<any>('/users/profile', profileData),
     
-    getStats: () => api.get<any>('/profile/stats'),
+    getStats: () => api.get<any>('/users/profile/stats'),
+  },
+
+  // Admin endpoints
+  admin: {
+    getStats: () => api.get<any>('/admin/stats'),
+    
+    getUsers: (params?: { role?: string; collegeId?: string }) =>
+      api.get<any[]>('/admin/users', params),
+
+    updateUser: (userId: string, userData: any) =>
+      api.put<any>(`/admin/users/${userId}`, userData),
+
+    deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+  },
+
+  // Support endpoints
+  support: {
+    createTicket: (ticketData: { subject: string; message: string; priority?: string }) =>
+      api.post<any>('/support/tickets', ticketData),
+
+    getTickets: () => api.get<any[]>('/support/tickets'),
+
+    updateTicket: (ticketId: string, update: { status?: string; response?: string }) =>
+      api.put<any>(`/support/tickets/${ticketId}`, update),
   },
 };
