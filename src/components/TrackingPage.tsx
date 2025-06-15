@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   MapPin, 
   Clock, 
@@ -12,6 +13,7 @@ import {
   Sun,
   Thermometer
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useBusSearch } from '../hooks/useBusSearch';
 import SearchBar from './SearchBar';
 import PopularRoutesWidget from './PopularRoutesWidget';
@@ -24,6 +26,7 @@ const TrackingPage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [weather] = useState({ temp: 22, condition: 'Sunny', icon: Sun });
   const [filters, setFilters] = useState({ etaRange: [0, 60], routeTypes: [], capacityFilter: 'all' });
+  const navigate = useNavigate();
   
   const {
     searchQuery,
@@ -60,7 +63,30 @@ const TrackingPage = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    toast.success('Route data refreshed');
     setTimeout(() => setIsRefreshing(false), 1000);
+  };
+
+  const handleBookThisBus = () => {
+    navigate('/book-ticket', { state: { selectedRoute } });
+  };
+
+  const handleSetArrivalAlert = () => {
+    toast.success(`Arrival alert set for Bus ${selectedRoute}`);
+    // Implement alert logic here
+  };
+
+  const handleShareLocation = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'SmartBus Location',
+        text: `I'm tracking Bus ${selectedRoute}`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Location link copied to clipboard');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -319,13 +345,22 @@ const TrackingPage = () => {
             >
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full bg-red-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-red-600 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25">
+                <button 
+                  onClick={handleBookThisBus}
+                  className="w-full bg-red-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-red-600 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25 focus-ring"
+                >
                   Book This Bus
                 </button>
-                <button className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <button 
+                  onClick={handleSetArrivalAlert}
+                  className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-ring"
+                >
                   Set Arrival Alert
                 </button>
-                <button className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <button 
+                  onClick={handleShareLocation}
+                  className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus-ring"
+                >
                   Share Location
                 </button>
               </div>

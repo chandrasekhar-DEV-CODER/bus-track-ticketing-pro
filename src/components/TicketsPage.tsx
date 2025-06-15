@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Ticket, 
   Download, 
@@ -9,14 +10,15 @@ import {
   XCircle, 
   AlertCircle,
   QrCode,
-  Filter,
   Search
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const TicketsPage = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const tickets = [
     {
@@ -73,6 +75,24 @@ const TicketsPage = () => {
       cancellable: false
     }
   ];
+
+  const handleViewQR = (ticketId: string) => {
+    setSelectedTicket(ticketId);
+  };
+
+  const handleDownload = (ticket: any) => {
+    toast.success(`Downloading ticket ${ticket.id}`);
+    // Implement actual download logic here
+  };
+
+  const handleCancelBooking = (ticketId: string) => {
+    toast.success(`Booking ${ticketId} cancelled successfully`);
+    // Implement actual cancellation logic here
+  };
+
+  const handleBookFirstTicket = () => {
+    navigate('/book-ticket');
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -162,6 +182,7 @@ const TicketsPage = () => {
               Close
             </button>
             <button 
+              onClick={() => handleDownload(ticket)}
               className="flex-1 text-white py-3 px-4 rounded-xl font-semibold transition-colors focus-ring flex items-center justify-center"
               style={{ backgroundColor: 'var(--accent-primary)' }}
             >
@@ -239,6 +260,7 @@ const TicketsPage = () => {
                 {searchTerm ? 'Try adjusting your search terms' : 'You haven\'t booked any tickets yet'}
               </p>
               <button 
+                onClick={handleBookFirstTicket}
                 className="text-white px-6 py-3 rounded-xl font-semibold transition-colors focus-ring"
                 style={{ backgroundColor: 'var(--accent-primary)' }}
               >
@@ -304,7 +326,7 @@ const TicketsPage = () => {
                       {ticket.status === 'upcoming' && (
                         <>
                           <button
-                            onClick={() => setSelectedTicket(ticket.id)}
+                            onClick={() => handleViewQR(ticket.id)}
                             className="flex items-center gap-2 text-white px-4 py-2 rounded-lg font-medium transition-colors focus-ring"
                             style={{ backgroundColor: 'var(--accent-primary)' }}
                           >
@@ -312,14 +334,20 @@ const TicketsPage = () => {
                             View QR
                           </button>
                           {ticket.cancellable && (
-                            <button className="glass border border-red-500/30 text-red-400 px-4 py-2 rounded-lg font-medium hover:bg-red-500/10 transition-colors focus-ring">
+                            <button 
+                              onClick={() => handleCancelBooking(ticket.id)}
+                              className="glass border border-red-500/30 text-red-400 px-4 py-2 rounded-lg font-medium hover:bg-red-500/10 transition-colors focus-ring"
+                            >
                               Cancel
                             </button>
                           )}
                         </>
                       )}
                       
-                      <button className="flex items-center gap-2 glass text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-ring">
+                      <button 
+                        onClick={() => handleDownload(ticket)}
+                        className="flex items-center gap-2 glass text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-ring"
+                      >
                         <Download className="h-4 w-4" />
                         Download
                       </button>
