@@ -10,7 +10,7 @@ import LazyRoute from './components/LazyRoute';
 
 // Lazy load components
 const Index = React.lazy(() => import('./pages/Index'));
-const LoginPage = React.lazy(() => import('./components/LoginPage'));
+const LoginPageComponent = React.lazy(() => import('./components/LoginPage'));
 const BookTicketPage = React.lazy(() => import('./pages/BookTicketPage'));
 const TrackBusPage = React.lazy(() => import('./pages/TrackBusPage'));
 const MyTicketsPage = React.lazy(() => import('./pages/MyTicketsPage'));
@@ -44,7 +44,7 @@ function App() {
                   } />
                   <Route path="/login" element={
                     <LazyRoute>
-                      <LoginPage />
+                      <LoginPageComponent />
                     </LazyRoute>
                   } />
                   <Route path="/book-ticket" element={

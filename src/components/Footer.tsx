@@ -1,13 +1,14 @@
+
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Github, Twitter, Linkedin, User } from 'lucide-react';
 import SmartBusLogo from './ui/SmartBusLogo';
 import CollegeBranding from './CollegeBranding';
 import { useEnhancedTheme } from '../contexts/EnhancedThemeContext';
-import { useApp } from '../contexts/AppContext';
+import { useAppContext } from '../contexts/AppContext';
 
 const Footer = () => {
   const { toggleTheme, theme } = useEnhancedTheme();
-  const { state } = useApp();
+  const { state } = useAppContext();
 
   return (
     <footer className="glass-footer mt-auto">
