@@ -17,11 +17,13 @@ import SearchBar from './SearchBar';
 import PopularRoutesWidget from './PopularRoutesWidget';
 import FilterButtons from './FilterButtons';
 import NearbyStopsWidget from './NearbyStopsWidget';
+import EnhancedSearchFilters from './EnhancedSearchFilters';
 
 const TrackingPage = () => {
   const [selectedRoute, setSelectedRoute] = useState('42A');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [weather] = useState({ temp: 22, condition: 'Sunny', icon: Sun });
+  const [filters, setFilters] = useState({ etaRange: [0, 60], routeTypes: [], capacityFilter: 'all' });
   
   const {
     searchQuery,
@@ -91,6 +93,11 @@ const TrackingPage = () => {
     setSearchQuery(routeId);
   };
 
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+    // Apply filters to results here
+  };
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -108,7 +115,7 @@ const TrackingPage = () => {
           </p>
         </motion.div>
 
-        {/* Search and Filters */}
+        {/* Search and Enhanced Filters */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,10 +129,7 @@ const TrackingPage = () => {
               suggestions={searchSuggestions}
               onSuggestionSelect={handleSuggestionSelect}
             />
-            <FilterButtons
-              activeFilter={filterStatus}
-              onFilterChange={setFilterStatus}
-            />
+            <EnhancedSearchFilters onFiltersChange={handleFiltersChange} />
           </div>
         </motion.div>
 

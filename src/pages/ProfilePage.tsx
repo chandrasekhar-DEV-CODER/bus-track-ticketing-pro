@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -22,6 +21,7 @@ import { useEnhancedTheme } from '@/contexts/EnhancedThemeContext';
 import AccentColorPicker from '@/components/ui/AccentColorPicker';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ProfileStatsWidget from '@/components/ProfileStatsWidget';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('trips');
@@ -80,14 +80,17 @@ const ProfilePage = () => {
 
   const renderTripsTab = () => (
     <div className="space-y-6">
+      {/* Enhanced Trips Display */}
       <div>
-        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Upcoming Trips</h3>
-        <div className="space-y-3">
+        <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Upcoming Trips</h3>
+        <div className="space-y-4">
           {upcomingTrips.map((trip) => (
             <motion.div
               key={trip.id}
-              className="glass rounded-2xl p-4 border border-white/20 dark:border-gray-700/50"
-              whileHover={{ scale: 1.02 }}
+              className="glass rounded-3xl p-6 border border-white/20 dark:border-gray-700/50 hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-300"
+              whileHover={{ scale: 1.01, y: -2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -159,6 +162,9 @@ const ProfilePage = () => {
           ))}
         </div>
       </div>
+
+      {/* Add Profile Stats Widget */}
+      <ProfileStatsWidget />
     </div>
   );
 
@@ -273,8 +279,8 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <Navbar />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Profile Sidebar */}
           <div className="lg:col-span-1">
             <Card className="glass border-white/20 dark:border-gray-700/50">
               <CardContent className="p-6 text-center">
