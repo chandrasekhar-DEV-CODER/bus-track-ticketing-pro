@@ -1,16 +1,14 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Moon, Sun } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEnhancedTheme } from '../contexts/EnhancedThemeContext';
 import AccentColorPicker from './ui/AccentColorPicker';
-import MicroButton from './ui/MicroButton';
 import SmartBusLogo from './ui/SmartBusLogo';
+import ProfileMenu from './ui/ProfileMenu';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, toggleTheme } = useEnhancedTheme();
   const location = useLocation();
 
   const navLinks = [
@@ -57,38 +55,16 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Theme Controls */}
+          {/* Right Side Controls */}
           <div className="hidden md:flex items-center space-x-4">
             <AccentColorPicker />
-            <MicroButton
-              onClick={toggleTheme}
-              variant="outline"
-              size="sm"
-              className="p-2 glass border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
-              ) : (
-                <Moon className="h-5 w-5 text-blue-600" />
-              )}
-            </MicroButton>
+            <ProfileMenu />
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <AccentColorPicker />
-            <MicroButton
-              onClick={toggleTheme}
-              variant="outline"
-              size="sm"
-              className="p-2 glass"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4 text-yellow-500" />
-              ) : (
-                <Moon className="h-4 w-4 text-blue-600" />
-              )}
-            </MicroButton>
+            <ProfileMenu />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus-ring rounded-lg p-2 hover-target glass"
