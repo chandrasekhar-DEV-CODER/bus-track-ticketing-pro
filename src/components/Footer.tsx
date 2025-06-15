@@ -1,19 +1,13 @@
-
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Github, Twitter, Linkedin, User, GraduationCap } from 'lucide-react';
+import { Phone, Mail, MapPin, Github, Twitter, Linkedin, User } from 'lucide-react';
 import SmartBusLogo from './ui/SmartBusLogo';
+import CollegeBranding from './CollegeBranding';
 import { useEnhancedTheme } from '../contexts/EnhancedThemeContext';
+import { useApp } from '../contexts/AppContext';
 
 const Footer = () => {
   const { toggleTheme, theme } = useEnhancedTheme();
-  
-  // Mock college context - in real app this would come from user context
-  const collegeInfo = {
-    name: 'Tech University',
-    logo: null,
-    supportEmail: 'transport@techuni.edu',
-    supportPhone: '+1 (555) 123-TECH'
-  };
+  const { state } = useApp();
 
   return (
     <footer className="glass-footer mt-auto">
@@ -27,23 +21,8 @@ const Footer = () => {
               real-time tracking, and seamless user experience for modern commuters.
             </p>
             
-            {/* College-specific info */}
-            <div className="bg-white/10 dark:bg-black/20 rounded-xl p-4 mb-6 border border-white/20 dark:border-gray-700/50">
-              <div className="flex items-center mb-3">
-                <GraduationCap className="h-5 w-5 text-red-500 mr-2" />
-                <span className="font-semibold text-gray-900 dark:text-white">{collegeInfo.name}</span>
-              </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center text-gray-600 dark:text-gray-400">
-                  <Phone className="h-3 w-3 mr-2 text-red-500" />
-                  <span>{collegeInfo.supportPhone}</span>
-                </div>
-                <div className="flex items-center text-gray-600 dark:text-gray-400">
-                  <Mail className="h-3 w-3 mr-2 text-red-500" />
-                  <span>{collegeInfo.supportEmail}</span>
-                </div>
-              </div>
-            </div>
+            {/* College-specific info with enhanced branding */}
+            <CollegeBranding variant="footer" showAlert={true} />
           </div>
           
           {/* Quick Links */}
@@ -67,30 +46,43 @@ const Footer = () => {
             </div>
             
             {/* College-specific links */}
-            <div className="mt-6 pt-4 border-t border-white/20 dark:border-gray-700/50">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campus Services</h4>
-              <div className="space-y-2">
-                <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                  Campus Shuttle Map
-                </a>
-                <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                  Student Portal
-                </a>
+            {state.college && (
+              <div className="mt-6 pt-4 border-t border-white/20 dark:border-gray-700/50">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campus Services</h4>
+                <div className="space-y-2">
+                  <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    Campus Shuttle Map
+                  </a>
+                  <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    Student Portal
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           
           {/* Profile & Settings */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Account</h3>
             <div className="space-y-3 mb-6">
-              <Link 
-                to="/profile" 
-                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded"
-              >
-                <User className="h-4 w-4 mr-2" />
-                My Profile
-              </Link>
+              {state.user ? (
+                <>
+                  <Link 
+                    to="/profile" 
+                    className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    My Profile
+                  </Link>
+                  <Link to="/my-tickets" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded">
+                    My Tickets
+                  </Link>
+                </>
+              ) : (
+                <Link to="/login" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded">
+                  Sign In
+                </Link>
+              )}
               <Link to="/support" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded">
                 Help Center
               </Link>
