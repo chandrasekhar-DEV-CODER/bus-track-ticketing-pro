@@ -57,6 +57,11 @@ function App() {
                       <TrackBusPage />
                     </LazyRoute>
                   } />
+                  <Route path="/tracking" element={
+                    <LazyRoute>
+                      <TrackBusPage />
+                    </LazyRoute>
+                  } />
                   <Route path="/my-tickets" element={
                     <LazyRoute>
                       <MyTicketsPage />
