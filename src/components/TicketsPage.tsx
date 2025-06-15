@@ -17,7 +17,7 @@ import {
 const TicketsPage = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
 
   const tickets = [
     {

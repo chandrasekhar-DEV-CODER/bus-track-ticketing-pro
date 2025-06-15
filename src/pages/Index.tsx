@@ -9,20 +9,16 @@ import TicketsPage from '../components/TicketsPage';
 import DriverPanel from '../components/DriverPanel';
 import AdminDashboard from '../components/AdminDashboard';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/book" element={<BookingPage />} />
-        <Route path="/track" element={<TrackingPage />} />
-        <Route path="/tickets" element={<TicketsPage />} />
-        <Route path="/driver" element={<DriverPanel />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-      </Routes>
+      <div className="dark:bg-slate-900">
+        <LandingPage />
+      </div>
+      <Footer />
     </div>
   );
 };
