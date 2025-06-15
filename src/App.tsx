@@ -4,7 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { EnhancedThemeProvider } from "./contexts/EnhancedThemeContext";
+import AnimatedCursor from "./components/ui/AnimatedCursor";
 import Index from "./pages/Index";
 import BookTicketPage from "./pages/BookTicketPage";
 import TrackBusPage from "./pages/TrackBusPage";
@@ -17,10 +18,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
+    <EnhancedThemeProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AnimatedCursor />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -33,7 +35,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </ThemeProvider>
+    </EnhancedThemeProvider>
   </QueryClientProvider>
 );
 

@@ -43,7 +43,9 @@ export default {
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					foreground: 'hsl(var(--accent-foreground))',
+					primary: 'var(--accent-primary)',
+					secondary: 'var(--accent-secondary)'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -105,13 +107,24 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'ripple': {
+					'0%': {
+						transform: 'scale(0)',
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'scale(4)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'scale-in': 'scale-in 0.2s ease-out',
+				'ripple': 'ripple 0.6s ease-out'
 			}
 		}
 	},
