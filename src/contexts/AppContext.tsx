@@ -1,27 +1,18 @@
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 
-// Enhanced TypeScript interfaces
+// Types
 export interface User {
   id: string;
   name: string;
   email: string;
-  collegeId: string;
-  studentId: string;
   avatar?: string;
-  memberSince: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
+  phone?: string;
+  collegeId?: string;
   preferences: {
     notifications: boolean;
-    emailUpdates: boolean;
-    smsAlerts: boolean;
-  };
-  stats: {
-    totalRides: number;
-    totalDistance: number;
-    co2Saved: number;
-    favoriteRoute?: string;
+    theme: 'light' | 'dark' | 'system';
+    language: string;
   };
 }
 
@@ -29,262 +20,169 @@ export interface College {
   id: string;
   name: string;
   logo?: string;
-  supportEmail: string;
-  supportPhone: string;
   primaryColor: string;
   secondaryColor: string;
-  campusMap?: string;
-  specialAlerts: string[];
-  features: {
-    liveTracking: boolean;
-    bookingEnabled: boolean;
-    loyaltyProgram: boolean;
-    campusIntegration: boolean;
-  };
-  operatingHours: {
-    weekdays: { start: string; end: string };
-    weekends: { start: string; end: string };
-  };
+  routes: string[];
 }
 
-export interface RouteInfo {
+export interface Booking {
   id: string;
-  name: string;
-  from: string;
-  to: string;
-  distance: number;
-  estimatedTime: number;
+  routeId: string;
+  userId: string;
+  date: string;
+  time: string;
+  seats: number;
+  status: 'confirmed' | 'cancelled' | 'completed';
+  qrCode: string;
   fare: number;
-  seatsAvailable: number;
-  nextDeparture: string;
-  busType: 'standard' | 'express' | 'shuttle';
-  accessibility: boolean;
-  wifiAvailable: boolean;
 }
 
-export interface BookingData {
-  selectedRoute?: RouteInfo;
-  passengers: number;
-  departureDate?: string;
-  returnDate?: string;
-  promoCode?: string;
-  fareCalculation?: {
-    baseFare: number;
-    taxes: number;
-    discount: number;
-    total: number;
-  };
-  passengerDetails: Array<{
-    name: string;
-    studentId: string;
-    seatPreference?: 'window' | 'aisle' | 'any';
-  }>;
-  preferences: {
-    accessibility: boolean;
-    wifi: boolean;
-    notifications: boolean;
-  };
-}
-
-export interface AppNotification {
-  id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  actionUrl?: string;
-}
-
-interface AppState {
+export interface AppState {
   user: User | null;
   college: College | null;
-  bookingData: BookingData;
-  notifications: AppNotification[];
+  bookings: Booking[];
+  theme: 'light' | 'dark' | 'system';
   isLoading: boolean;
   error: string | null;
-  connectionStatus: 'online' | 'offline';
-  lastSync: string | null;
+  isOnline: boolean;
 }
 
-type AppAction = 
-  | { type: 'SET_USER'; payload: User }
-  | { type: 'UPDATE_USER'; payload: Partial<User> }
-  | { type: 'SET_COLLEGE'; payload: College }
-  | { type: 'UPDATE_BOOKING'; payload: Partial<BookingData> }
-  | { type: 'RESET_BOOKING' }
-  | { type: 'ADD_NOTIFICATION'; payload: AppNotification }
-  | { type: 'MARK_NOTIFICATION_READ'; payload: string }
-  | { type: 'CLEAR_NOTIFICATIONS' }
+// Actions
+type AppAction =
+  | { type: 'SET_USER'; payload: User | null }
+  | { type: 'SET_COLLEGE'; payload: College | null }
+  | { type: 'SET_BOOKINGS'; payload: Booking[] }
+  | { type: 'ADD_BOOKING'; payload: Booking }
+  | { type: 'UPDATE_BOOKING'; payload: { id: string; updates: Partial<Booking> } }
+  | { type: 'REMOVE_BOOKING'; payload: string }
+  | { type: 'SET_THEME'; payload: 'light' | 'dark' | 'system' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_CONNECTION_STATUS'; payload: 'online' | 'offline' }
-  | { type: 'UPDATE_LAST_SYNC'; payload: string }
-  | { type: 'LOGOUT' };
+  | { type: 'SET_ONLINE'; payload: boolean };
 
-// Initial state with better defaults
+// Initial state
 const initialState: AppState = {
   user: null,
   college: null,
-  bookingData: {
-    passengers: 1,
-    passengerDetails: [],
-    preferences: {
-      accessibility: false,
-      wifi: false,
-      notifications: true,
-    },
-  },
-  notifications: [],
+  bookings: [],
+  theme: 'system',
   isLoading: false,
   error: null,
-  connectionStatus: 'online',
-  lastSync: null,
+  isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
 };
 
-// Enhanced reducer with comprehensive state management
+// Reducer
 const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, user: action.payload, error: null };
-      
-    case 'UPDATE_USER':
-      return { 
-        ...state, 
-        user: state.user ? { ...state.user, ...action.payload } : null 
-      };
-      
+      return { ...state, user: action.payload };
     case 'SET_COLLEGE':
       return { ...state, college: action.payload };
-      
+    case 'SET_BOOKINGS':
+      return { ...state, bookings: action.payload };
+    case 'ADD_BOOKING':
+      return { ...state, bookings: [...state.bookings, action.payload] };
     case 'UPDATE_BOOKING':
-      return { 
-        ...state, 
-        bookingData: { ...state.bookingData, ...action.payload }
-      };
-      
-    case 'RESET_BOOKING':
-      return { 
-        ...state, 
-        bookingData: {
-          passengers: 1,
-          passengerDetails: [],
-          preferences: {
-            accessibility: false,
-            wifi: false,
-            notifications: true,
-          },
-        }
-      };
-      
-    case 'ADD_NOTIFICATION':
       return {
         ...state,
-        notifications: [action.payload, ...state.notifications].slice(0, 50) // Keep last 50
+        bookings: state.bookings.map(booking =>
+          booking.id === action.payload.id
+            ? { ...booking, ...action.payload.updates }
+            : booking
+        ),
       };
-      
-    case 'MARK_NOTIFICATION_READ':
+    case 'REMOVE_BOOKING':
       return {
         ...state,
-        notifications: state.notifications.map(n => 
-          n.id === action.payload ? { ...n, read: true } : n
-        )
+        bookings: state.bookings.filter(booking => booking.id !== action.payload),
       };
-      
-    case 'CLEAR_NOTIFICATIONS':
-      return { ...state, notifications: [] };
-      
+    case 'SET_THEME':
+      return { ...state, theme: action.payload };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-      
     case 'SET_ERROR':
-      return { ...state, error: action.payload, isLoading: false };
-      
-    case 'SET_CONNECTION_STATUS':
-      return { ...state, connectionStatus: action.payload };
-      
-    case 'UPDATE_LAST_SYNC':
-      return { ...state, lastSync: action.payload };
-      
-    case 'LOGOUT':
-      return { 
-        ...initialState,
-        connectionStatus: state.connectionStatus,
-      };
-      
+      return { ...state, error: action.payload };
+    case 'SET_ONLINE':
+      return { ...state, isOnline: action.payload };
     default:
       return state;
   }
 };
 
-// Enhanced context interface
-interface AppContextType {
+// Context
+const AppContext = createContext<{
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
-  // Helper functions
-  login: (userData: User, token: string) => void;
-  logout: () => void;
-  updateUser: (userData: Partial<User>) => void;
-  updateBooking: (data: Partial<BookingData>) => void;
-  resetBooking: () => void;
-  setCollege: (college: College) => void;
-  addNotification: (notification: Omit<AppNotification, 'id' | 'timestamp'>) => void;
-  markNotificationRead: (id: string) => void;
-  clearNotifications: () => void;
-  // Computed values
-  unreadNotificationsCount: number;
-  isAuthenticated: boolean;
-  hasActiveBooking: boolean;
-}
+} | null>(null);
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-// Enhanced provider with persistence and network status
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Provider component
+export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   // Load persisted data on mount
   useEffect(() => {
     const loadPersistedData = () => {
       try {
-        const savedUser = localStorage.getItem('smartbus-user');
-        const savedCollege = localStorage.getItem('smartbus-college');
-        const savedBooking = localStorage.getItem('smartbus-booking');
-        const savedNotifications = localStorage.getItem('smartbus-notifications');
-        
-        if (savedUser) {
-          const user = JSON.parse(savedUser);
-          dispatch({ type: 'SET_USER', payload: user });
+        // Load user
+        const userData = localStorage.getItem('smartbus-user');
+        if (userData) {
+          dispatch({ type: 'SET_USER', payload: JSON.parse(userData) });
         }
-        
-        if (savedCollege) {
-          const college = JSON.parse(savedCollege);
-          dispatch({ type: 'SET_COLLEGE', payload: college });
+
+        // Load college
+        const collegeData = localStorage.getItem('smartbus-college');
+        if (collegeData) {
+          dispatch({ type: 'SET_COLLEGE', payload: JSON.parse(collegeData) });
         }
-        
-        if (savedBooking) {
-          const booking = JSON.parse(savedBooking);
-          dispatch({ type: 'UPDATE_BOOKING', payload: booking });
+
+        // Load bookings
+        const bookingsData = localStorage.getItem('smartbus-bookings');
+        if (bookingsData) {
+          dispatch({ type: 'SET_BOOKINGS', payload: JSON.parse(bookingsData) });
         }
-        
-        if (savedNotifications) {
-          const notifications = JSON.parse(savedNotifications);
-          notifications.forEach((notification: AppNotification) => {
-            dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
-          });
+
+        // Load theme
+        const themeData = localStorage.getItem('smartbus-theme');
+        if (themeData) {
+          dispatch({ type: 'SET_THEME', payload: themeData as 'light' | 'dark' | 'system' });
         }
       } catch (error) {
-        console.error('Failed to load persisted data:', error);
+        console.error('Error loading persisted data:', error);
       }
     };
 
     loadPersistedData();
   }, []);
 
-  // Monitor network status
+  // Persist data changes
   useEffect(() => {
-    const handleOnline = () => dispatch({ type: 'SET_CONNECTION_STATUS', payload: 'online' });
-    const handleOffline = () => dispatch({ type: 'SET_CONNECTION_STATUS', payload: 'offline' });
+    if (state.user) {
+      localStorage.setItem('smartbus-user', JSON.stringify(state.user));
+    } else {
+      localStorage.removeItem('smartbus-user');
+    }
+  }, [state.user]);
+
+  useEffect(() => {
+    if (state.college) {
+      localStorage.setItem('smartbus-college', JSON.stringify(state.college));
+    } else {
+      localStorage.removeItem('smartbus-college');
+    }
+  }, [state.college]);
+
+  useEffect(() => {
+    localStorage.setItem('smartbus-bookings', JSON.stringify(state.bookings));
+  }, [state.bookings]);
+
+  useEffect(() => {
+    localStorage.setItem('smartbus-theme', state.theme);
+  }, [state.theme]);
+
+  // Network status monitoring
+  useEffect(() => {
+    const handleOnline = () => dispatch({ type: 'SET_ONLINE', payload: true });
+    const handleOffline = () => dispatch({ type: 'SET_ONLINE', payload: false });
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -295,142 +193,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
   }, []);
 
-  // Persist data changes
-  useEffect(() => {
-    if (state.user) {
-      localStorage.setItem('smartbus-user', JSON.stringify(state.user));
-    }
-  }, [state.user]);
-
-  useEffect(() => {
-    if (state.college) {
-      localStorage.setItem('smartbus-college', JSON.stringify(state.college));
-    }
-  }, [state.college]);
-
-  useEffect(() => {
-    localStorage.setItem('smartbus-booking', JSON.stringify(state.bookingData));
-  }, [state.bookingData]);
-
-  useEffect(() => {
-    localStorage.setItem('smartbus-notifications', JSON.stringify(state.notifications));
-  }, [state.notifications]);
-
-  // Helper functions
-  const login = (userData: User, token: string) => {
-    dispatch({ type: 'SET_USER', payload: userData });
-    localStorage.setItem('smartbus-token', token);
-    
-    // Fetch college data
-    fetchCollegeData(userData.collegeId);
-  };
-
-  const logout = () => {
-    dispatch({ type: 'LOGOUT' });
-    localStorage.removeItem('smartbus-user');
-    localStorage.removeItem('smartbus-college');
-    localStorage.removeItem('smartbus-token');
-    localStorage.removeItem('smartbus-booking');
-  };
-
-  const updateUser = (userData: Partial<User>) => {
-    dispatch({ type: 'UPDATE_USER', payload: userData });
-  };
-
-  const updateBooking = (data: Partial<BookingData>) => {
-    dispatch({ type: 'UPDATE_BOOKING', payload: data });
-  };
-
-  const resetBooking = () => {
-    dispatch({ type: 'RESET_BOOKING' });
-  };
-
-  const setCollege = (college: College) => {
-    dispatch({ type: 'SET_COLLEGE', payload: college });
-  };
-
-  const addNotification = (notification: Omit<AppNotification, 'id' | 'timestamp'>) => {
-    const fullNotification: AppNotification = {
-      ...notification,
-      id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
-    dispatch({ type: 'ADD_NOTIFICATION', payload: fullNotification });
-  };
-
-  const markNotificationRead = (id: string) => {
-    dispatch({ type: 'MARK_NOTIFICATION_READ', payload: id });
-  };
-
-  const clearNotifications = () => {
-    dispatch({ type: 'CLEAR_NOTIFICATIONS' });
-  };
-
-  const fetchCollegeData = async (collegeId: string) => {
-    // Mock college data - in real app, this would be an API call
-    const mockColleges: Record<string, College> = {
-      'tech-uni': {
-        id: 'tech-uni',
-        name: 'Tech University',
-        supportEmail: 'transport@techuni.edu',
-        supportPhone: '+1 (555) 123-TECH',
-        primaryColor: '#EF4444',
-        secondaryColor: '#F87171',
-        specialAlerts: ['Final exams: Extra shuttles running 7AM-11PM'],
-        features: {
-          liveTracking: true,
-          bookingEnabled: true,
-          loyaltyProgram: true,
-          campusIntegration: true,
-        },
-        operatingHours: {
-          weekdays: { start: '06:00', end: '23:00' },
-          weekends: { start: '08:00', end: '22:00' },
-        },
-      }
-    };
-
-    const college = mockColleges[collegeId];
-    if (college) {
-      setCollege(college);
-    }
-  };
-
-  // Computed values
-  const unreadNotificationsCount = state.notifications.filter(n => !n.read).length;
-  const isAuthenticated = !!state.user;
-  const hasActiveBooking = !!state.bookingData.selectedRoute;
-
-  const contextValue: AppContextType = {
-    state,
-    dispatch,
-    login,
-    logout,
-    updateUser,
-    updateBooking,
-    resetBooking,
-    setCollege,
-    addNotification,
-    markNotificationRead,
-    clearNotifications,
-    unreadNotificationsCount,
-    isAuthenticated,
-    hasActiveBooking,
-  };
-
   return (
-    <AppContext.Provider value={contextValue}>
+    <AppContext.Provider value={{ state, dispatch }}>
       {children}
     </AppContext.Provider>
   );
 };
 
-// Enhanced hook with better error handling
-export const useApp = () => {
+// Custom hook
+export const useAppContext = () => {
   const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
+  if (!context) {
+    throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
+};
+
+// Convenience hooks
+export const useUser = () => {
+  const { state } = useAppContext();
+  return state.user;
+};
+
+export const useCollege = () => {
+  const { state } = useAppContext();
+  return state.college;
+};
+
+export const useBookings = () => {
+  const { state } = useAppContext();
+  return state.bookings;
+};
+
+export const useTheme = () => {
+  const { state, dispatch } = useAppContext();
+  
+  const setTheme = (theme: 'light' | 'dark' | 'system') => {
+    dispatch({ type: 'SET_THEME', payload: theme });
+  };
+  
+  return { theme: state.theme, setTheme };
 };

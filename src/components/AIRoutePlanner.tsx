@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation, MapPin, Clock, ArrowRight, Zap } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AIRoutePlanner = () => {
   const [start, setStart] = useState('');
@@ -10,12 +11,17 @@ const AIRoutePlanner = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const planRoute = async () => {
-    if (!start || !destination) return;
+    if (!start || !destination) {
+      toast.error('Please enter both starting point and destination');
+      return;
+    }
     
     setIsLoading(true);
+    console.log('Planning route from', start, 'to', destination);
+    
     // Mock AI planning delay
     setTimeout(() => {
-      setSuggestions([
+      const mockSuggestions = [
         {
           id: 1,
           routes: ['42A', '15B'],
@@ -40,9 +46,19 @@ const AIRoutePlanner = () => {
           fare: '$8.50',
           description: 'Scenic route via Tech Park and Mall Plaza'
         }
-      ]);
+      ];
+      
+      setSuggestions(mockSuggestions);
       setIsLoading(false);
+      toast.success('Route suggestions generated!');
+      console.log('Route suggestions:', mockSuggestions);
     }, 2000);
+  };
+
+  const selectRoute = (suggestion) => {
+    console.log('Selected route:', suggestion);
+    toast.success(`Selected route with ${suggestion.routes.join(' → ')}`);
+    // Here you could navigate to booking page with selected route
   };
 
   return (
@@ -108,6 +124,7 @@ const AIRoutePlanner = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="bg-white/10 dark:bg-black/20 rounded-xl p-4 border border-white/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-black/30 transition-all duration-200 cursor-pointer"
+              onClick={() => selectRoute(suggestion)}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">

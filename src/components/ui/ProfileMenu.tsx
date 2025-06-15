@@ -1,57 +1,47 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Ticket, LogOut, Moon, Sun, ChevronDown } from 'lucide-react';
-import { useEnhancedTheme } from '../../contexts/EnhancedThemeContext';
-import { useApp } from '../../contexts/AppContext';
-import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { User, LogOut, Ticket, Sun, Moon, Monitor, ChevronDown } from 'lucide-react';
+import { useAppContext, useTheme } from '../../contexts/AppContext';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, toggleTheme } = useEnhancedTheme();
-  const { state, logout } = useApp();
-  const { user } = state;
+  const { state, dispatch } = useAppContext();
+  const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    dispatch({ type: 'SET_USER', payload: null });
+    dispatch({ type: 'SET_COLLEGE', payload: null });
+    dispatch({ type: 'SET_BOOKINGS', payload: [] });
+    localStorage.clear();
+    navigate('/login');
     setIsOpen(false);
   };
 
-  const menuItems = [
-    {
-      icon: User,
-      label: 'Profile',
-      href: '/profile',
-      onClick: () => setIsOpen(false)
-    },
-    {
-      icon: Ticket,
-      label: 'My Tickets',
-      href: '/my-tickets',
-      onClick: () => setIsOpen(false)
+  const getThemeIcon = () => {
+    switch (theme) {
+      case 'light': return <Sun className="h-4 w-4" />;
+      case 'dark': return <Moon className="h-4 w-4" />;
+      default: return <Monitor className="h-4 w-4" />;
     }
-  ];
+  };
 
-  if (!user) {
+  const cycleTheme = () => {
+    const themes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
+    const currentIndex = themes.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+  };
+
+  if (!state.user) {
     return (
       <Link
         to="/login"
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white hover-target focus-ring transition-all duration-300"
-        style={{ backgroundColor: 'transparent' }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--accent-primary)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
-        }}
+        className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors focus-ring"
       >
-        <Avatar className="w-8 h-8">
-          <AvatarFallback className="bg-gray-200 dark:bg-gray-700">
-            <User className="w-4 h-4" />
-          </AvatarFallback>
-        </Avatar>
-        <span>Login</span>
+        Login
       </Link>
     );
   }
@@ -60,92 +50,79 @@ const ProfileMenu = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg hover-target focus-ring transition-all duration-300"
-        aria-expanded={isOpen}
-        aria-haspopup="true"
+        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-ring"
       >
-        <Avatar className="w-8 h-8">
-          <AvatarImage src={user.avatar} alt={user.name} />
-          <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-            {user.name?.charAt(0) || 'U'}
-          </AvatarFallback>
-        </Avatar>
-        <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
-          {user.name}
+        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+          <User className="h-4 w-4 text-white" />
+        </div>
+        <span className="hidden md:block text-gray-700 dark:text-gray-300 font-medium">
+          {state.user.name}
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50"
           >
-            {/* User Info */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="bg-gray-200 dark:bg-gray-700">
-                    {user.name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-white" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user.email}
-                  </p>
+                  <p className="font-medium text-gray-900 dark:text-white">{state.user.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{state.user.email}</p>
                 </div>
               </div>
             </div>
 
-            {/* Menu Items */}
-            <div className="py-1">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={item.onClick}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                >
-                  <item.icon className="w-4 h-4 mr-3" />
-                  {item.label}
-                </Link>
-              ))}
-
-              {/* Theme Toggle */}
+            <div className="py-2">
               <button
-                onClick={toggleTheme}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                onClick={cycleTheme}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 mr-3 text-yellow-500" />
-                ) : (
-                  <Moon className="w-4 h-4 mr-3 text-blue-600" />
-                )}
-                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                {getThemeIcon()}
+                <span className="ml-3 text-gray-700 dark:text-gray-300">
+                  Theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                </span>
               </button>
 
-              {/* Logout */}
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <User className="h-4 w-4 text-gray-500" />
+                <span className="ml-3 text-gray-700 dark:text-gray-300">Profile</span>
+              </Link>
+
+              <Link
+                to="/my-tickets"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Ticket className="h-4 w-4 text-gray-500" />
+                <span className="ml-3 text-gray-700 dark:text-gray-300">My Tickets</span>
+              </Link>
+
               <button
                 onClick={handleLogout}
-                className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-red-600 dark:text-red-400"
               >
-                <LogOut className="w-4 h-4 mr-3" />
-                Logout
+                <LogOut className="h-4 w-4" />
+                <span className="ml-3">Logout</span>
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Backdrop */}
+      {/* Click outside to close */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40"

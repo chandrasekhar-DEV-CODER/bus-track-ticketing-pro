@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Bus } from 'lucide-react';
-import { useAppContext } from '../contexts/AppContext';
+import { useUser } from '../contexts/AppContext';
 import ProfileMenu from './ui/ProfileMenu';
 import SmartBusLogo from './ui/SmartBusLogo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAppContext();
+  const user = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -62,16 +62,7 @@ const Navbar = () => {
 
           {/* Right side - Profile or Login */}
           <div className="hidden lg:flex items-center space-x-4">
-            {user ? (
-              <ProfileMenu />
-            ) : (
-              <button
-                onClick={() => handleNavClick('/login')}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors focus-ring"
-              >
-                Login
-              </button>
-            )}
+            <ProfileMenu />
           </div>
 
           {/* Mobile menu button */}
@@ -108,16 +99,7 @@ const Navbar = () => {
               
               {/* Mobile Profile or Login */}
               <div className="pt-4 border-t border-white/10 dark:border-gray-700/30">
-                {user ? (
-                  <ProfileMenu isMobile />
-                ) : (
-                  <button
-                    onClick={() => handleNavClick('/login')}
-                    className="w-full bg-red-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-red-600 transition-colors focus-ring"
-                  >
-                    Login
-                  </button>
-                )}
+                <ProfileMenu />
               </div>
             </div>
           </motion.div>
