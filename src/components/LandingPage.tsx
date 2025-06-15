@@ -10,6 +10,8 @@ import {
   Star,
   ArrowRight
 } from 'lucide-react';
+import LiveNotificationsPanel from './LiveNotificationsPanel';
+import AIRoutePlanner from './AIRoutePlanner';
 
 const LandingPage = () => {
   const features = [
@@ -65,6 +67,8 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <LiveNotificationsPanel />
+      
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -80,14 +84,14 @@ const LandingPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/book"
+                  to="/book-ticket"
                   className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
                 >
                   Book Ticket Now
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
-                  to="/track"
+                  to="/track-bus"
                   className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-800 transition-all duration-300"
                 >
                   Track Live Bus
@@ -130,13 +134,13 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Why Choose SmartBus?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Experience modern public transportation with cutting-edge technology 
               and user-friendly features designed for your convenience.
             </p>
@@ -146,15 +150,15 @@ const LandingPage = () => {
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               >
-                <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
-                  <feature.icon className="h-8 w-8 text-blue-600" />
+                <div className="bg-blue-100 dark:bg-blue-900/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                  <feature.icon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -163,14 +167,29 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* AI Route Planner Section */}
+      <section className="py-20 bg-gray-50 dark:bg-slate-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Smart Journey Planning
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Let AI find the best routes for your trip
+            </p>
+          </div>
+          <AIRoutePlanner />
+        </div>
+      </section>
+
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               What Our Users Say
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-400">
               Join thousands of satisfied commuters who love SmartBus
             </p>
           </div>
@@ -179,17 +198,17 @@ const LandingPage = () => {
             {testimonials.map((testimonial, index) => (
               <div 
                 key={index}
-                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
+                className="bg-gray-50 dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700"
               >
                 <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-6 italic">
+                <p className="text-gray-600 dark:text-gray-400 mb-6 italic">
                   "{testimonial.text}"
                 </p>
-                <div className="font-semibold text-gray-900">
+                <div className="font-semibold text-gray-900 dark:text-white">
                   {testimonial.name}
                 </div>
               </div>
@@ -215,7 +234,7 @@ const LandingPage = () => {
               Get Started Now
             </Link>
             <Link
-              to="/track"
+              to="/track-bus"
               className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
             >
               Try Live Tracking
@@ -223,62 +242,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="bg-blue-600 p-2 rounded-lg">
-                  <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-lg">SB</span>
-                  </div>
-                </div>
-                <span className="text-2xl font-bold">SmartBus</span>
-              </div>
-              <p className="text-gray-400 mb-4 max-w-md">
-                Revolutionizing public transportation with smart technology, 
-                real-time tracking, and seamless user experience.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <div className="space-y-2">
-                <Link to="/book" className="block text-gray-400 hover:text-white transition-colors">
-                  Book Ticket
-                </Link>
-                <Link to="/track" className="block text-gray-400 hover:text-white transition-colors">
-                  Track Bus
-                </Link>
-                <Link to="/tickets" className="block text-gray-400 hover:text-white transition-colors">
-                  My Tickets
-                </Link>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Support</h3>
-              <div className="space-y-2">
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">
-                  Help Center
-                </a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">
-                  Contact Us
-                </a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">
-                  Privacy Policy
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 SmartBus. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import TrackBusPage from "./pages/TrackBusPage";
 import MyTicketsPage from "./pages/MyTicketsPage";
 import LoginPage from "./pages/LoginPage";
 import SupportPage from "./pages/SupportPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/my-tickets" element={<MyTicketsPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/support" element={<SupportPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

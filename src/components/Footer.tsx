@@ -1,9 +1,20 @@
 
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Github, Twitter, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Github, Twitter, Linkedin, User, GraduationCap } from 'lucide-react';
 import SmartBusLogo from './ui/SmartBusLogo';
+import { useEnhancedTheme } from '../contexts/EnhancedThemeContext';
 
 const Footer = () => {
+  const { toggleTheme, theme } = useEnhancedTheme();
+  
+  // Mock college context - in real app this would come from user context
+  const collegeInfo = {
+    name: 'Tech University',
+    logo: null,
+    supportEmail: 'transport@techuni.edu',
+    supportPhone: '+1 (555) 123-TECH'
+  };
+
   return (
     <footer className="glass-footer mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -15,18 +26,22 @@ const Footer = () => {
               Revolutionizing public transportation with smart technology, 
               real-time tracking, and seamless user experience for modern commuters.
             </p>
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                <Phone className="h-4 w-4 mr-3 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} />
-                <span>+1 (555) 123-4567</span>
+            
+            {/* College-specific info */}
+            <div className="bg-white/10 dark:bg-black/20 rounded-xl p-4 mb-6 border border-white/20 dark:border-gray-700/50">
+              <div className="flex items-center mb-3">
+                <GraduationCap className="h-5 w-5 text-red-500 mr-2" />
+                <span className="font-semibold text-gray-900 dark:text-white">{collegeInfo.name}</span>
               </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                <Mail className="h-4 w-4 mr-3 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} />
-                <span>support@smartbus.com</span>
-              </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-                <MapPin className="h-4 w-4 mr-3 flex-shrink-0" style={{ color: 'var(--accent-primary)' }} />
-                <span>123 Transit Ave, Smart City</span>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <Phone className="h-3 w-3 mr-2 text-red-500" />
+                  <span>{collegeInfo.supportPhone}</span>
+                </div>
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                  <Mail className="h-3 w-3 mr-2 text-red-500" />
+                  <span>{collegeInfo.supportEmail}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -50,12 +65,32 @@ const Footer = () => {
                 </Link>
               ))}
             </div>
+            
+            {/* College-specific links */}
+            <div className="mt-6 pt-4 border-t border-white/20 dark:border-gray-700/50">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campus Services</h4>
+              <div className="space-y-2">
+                <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  Campus Shuttle Map
+                </a>
+                <a href="#" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  Student Portal
+                </a>
+              </div>
+            </div>
           </div>
           
-          {/* Support & Social */}
+          {/* Profile & Settings */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Connect</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Account</h3>
             <div className="space-y-3 mb-6">
+              <Link 
+                to="/profile" 
+                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded"
+              >
+                <User className="h-4 w-4 mr-2" />
+                My Profile
+              </Link>
               <Link to="/support" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded">
                 Help Center
               </Link>
@@ -65,6 +100,17 @@ const Footer = () => {
               <a href="#" className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 hover-target focus-ring rounded">
                 Terms of Service
               </a>
+            </div>
+            
+            {/* Theme Toggle */}
+            <div className="mb-4">
+              <button
+                onClick={toggleTheme}
+                className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+              >
+                <span className="text-sm">Theme:</span>
+                <span className="text-lg">{theme === 'dark' ? '🌙' : '☀️'}</span>
+              </button>
             </div>
             
             {/* Social Links */}
