@@ -14,7 +14,264 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booked_at: string
+          booking_status: string
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          created_at: string
+          dropoff_stop: string
+          id: string
+          payment_id: string | null
+          payment_status: string
+          pickup_stop: string
+          route_id: string
+          seats_booked: number
+          total_amount: number
+          travel_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booked_at?: string
+          booking_status?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          dropoff_stop: string
+          id?: string
+          payment_id?: string | null
+          payment_status?: string
+          pickup_stop: string
+          route_id: string
+          seats_booked?: number
+          total_amount: number
+          travel_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booked_at?: string
+          booking_status?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          dropoff_stop?: string
+          id?: string
+          payment_id?: string | null
+          payment_status?: string
+          pickup_stop?: string
+          route_id?: string
+          seats_booked?: number
+          total_amount?: number
+          travel_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "bus_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bus_routes: {
+        Row: {
+          active: boolean
+          arrival_location: string
+          arrival_time: string
+          bus_number: string
+          college_id: string
+          created_at: string
+          departure_location: string
+          departure_time: string
+          driver_name: string | null
+          driver_phone: string | null
+          id: string
+          price: number
+          route_name: string
+          route_number: string
+          stops: Json | null
+          total_seats: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          arrival_location: string
+          arrival_time: string
+          bus_number: string
+          college_id: string
+          created_at?: string
+          departure_location: string
+          departure_time: string
+          driver_name?: string | null
+          driver_phone?: string | null
+          id?: string
+          price: number
+          route_name: string
+          route_number: string
+          stops?: Json | null
+          total_seats?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          arrival_location?: string
+          arrival_time?: string
+          bus_number?: string
+          college_id?: string
+          created_at?: string
+          departure_location?: string
+          departure_time?: string
+          driver_name?: string | null
+          driver_phone?: string | null
+          id?: string
+          price?: number
+          route_name?: string
+          route_number?: string
+          stops?: Json | null
+          total_seats?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bus_routes_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colleges: {
+        Row: {
+          active: boolean
+          address: string
+          city: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address: string
+          city: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          city?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          college_id: string | null
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          role: string
+          student_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          college_id?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          role?: string
+          student_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          college_id?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          role?: string
+          student_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          priority: string
+          response: string | null
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          priority?: string
+          response?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          priority?: string
+          response?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
