@@ -192,7 +192,7 @@ export const api = {
       api.get<any[]>(userId ? `/bookings/user/${userId}` : '/bookings/user'),
     
     cancel: (bookingId: string, reason?: string) => 
-      api.delete(`/bookings/${bookingId}`, { data: { reason } }),
+      apiClient.delete(`/bookings/${bookingId}`, { data: { reason } }).then(res => res.data),
     
     getById: (bookingId: string) => api.get<any>(`/bookings/${bookingId}`),
 
